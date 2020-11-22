@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="mainVbox" prefHeight="520.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.fxCtrls.MainCtrl">
+   <children>
+      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" onMouseDragged="#dragBarDrag" onMousePressed="#dragBarMousePressed" prefHeight="25.0" prefWidth="200.0" styleClass="dragBar">
+         <children>
+            <HBox prefHeight="25.0" prefWidth="615.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#mainButton" text="Main" />
+                  <Button mnemonicParsing="false" onAction="#logsButton" text="Logs" />
+                  <Button mnemonicParsing="false" onAction="#advancedButton" text="Advanced">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+             <Button id="closeButton" mnemonicParsing="false" onMouseClicked="#closeEvent" prefHeight="25.0" prefWidth="25.0" text="X" textFill="WHITE" StackPane.alignment="TOP_RIGHT">
+                 <font>
+                     <Font name="Arial Black" size="10.0" />
+                 </font>
+             </Button>
+         </children>
+      </HBox>
+      <fx:include source="encryptPane.fxml" fx:id="encryptPane" />
+   </children>
+</VBox>

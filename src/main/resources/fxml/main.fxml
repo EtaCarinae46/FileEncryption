@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.*?>
+
+<VBox fx:id="mainVbox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.fxCtrls.MainCtrl">
+   <children>
+      <HBox fx:id="dragBar" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" prefWidth="200.0" styleClass="dragBar">
+         <children>
+            <HBox alignment="CENTER_LEFT" onMouseDragged="#dragBarDrag" onMousePressed="#dragBarMousePressed" prefHeight="25.0" prefWidth="615.0">
+               <children>
+                  <Label text="Encryption" textFill="#d7d7d7">
+                     <font>
+                        <Font name="Arial Black" size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="8.0" />
+                     </HBox.margin>
+                  </Label>
+               </children></HBox>
+             <Button id="closeButton" mnemonicParsing="false" onMouseClicked="#closeEvent" prefHeight="25.0" prefWidth="25.0" text="X" textFill="WHITE" StackPane.alignment="TOP_RIGHT">
+                 <font>
+                     <Font name="Arial Black" size="10.0" />
+                 </font>
+             </Button>
+         </children>
+      </HBox>
+      <TabPane fx:id="tabPane" prefHeight="495.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Main">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="520.0" prefWidth="640.0">
+                     <children>
+                        <GridPane alignment="CENTER" layoutX="-9.0" layoutY="30.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="116.0" prefWidth="299.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="235.0" minWidth="10.0" prefWidth="220.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <TextField fx:id="filePath" promptText="File Path" />
+                              <PasswordField fx:id="pwdField" promptText="Password" GridPane.rowIndex="1" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.rowIndex="2">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#encrypt" text="Okay"/>
+                                    <Button mnemonicParsing="false" onAction="#fileChooser" text="Browse" />
+                                    <Button mnemonicParsing="false" onAction="#clearList" text="Clear List" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </GridPane>
+                        <ProgressBar fx:id="progressBar" layoutX="436.0" layoutY="440.0" prefHeight="22.0" prefWidth="190.0" progress="0.0" visible="false" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Logs">
+               <content>
+                  <AnchorPane prefHeight="141.0" prefWidth="65.0">
+                     <children>
+                        <TextArea fx:id="logArea" editable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="446.0" prefWidth="620.0" wrapText="true">
+                           <contextMenu>
+                              <ContextMenu>
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear" />
+                                </items>
+                              </ContextMenu>
+                           </contextMenu>
+                        </TextArea>
+                     </children>
+                  </AnchorPane>
+               </content>
+          </Tab>
+            <Tab text="Advanced">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <CheckBox fx:id="enableAdvanced" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#enableAdvancedClick" text="Enable advanced options" textFill="#d0cccc" />
+                        <VBox fx:id="advancedVBox" disable="true" layoutX="14.0" layoutY="50.0" prefHeight="391.0" prefWidth="230.0" spacing="3.0">
+                           <children>
+                              <CheckBox fx:id="keyFromFile" mnemonicParsing="false" onAction="#keyFromFileClick" text="Key from file" textFill="#d0cccc">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </CheckBox>
+                              <TextField fx:id="keyPath" disable="true" layoutX="10.0" layoutY="27.0" promptText="path" />
+                              <CheckBox fx:id="encryptMaxSize" mnemonicParsing="false" onAction="#encryptMaxSizeAction" text="Max size to encrypt" textFill="#d0cccc">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </CheckBox>
+                              <TextField fx:id="bufferSizeArea" disable="true" promptText="bytes" />
+                              <CheckBox fx:id="bufferedEncrypt" mnemonicParsing="false" onAction="#bufferedEncryptAction" text="Encrypt the entire file (slower)" textFill="#d0cccc" wrapText="true">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </CheckBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</VBox>
