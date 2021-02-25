@@ -1,5 +1,7 @@
 package service;
 
+import controller.fxCtrls.MainCtrl;
+import javafx.scene.control.ProgressBar;
 import service.base.BaseEncryption;
 import main.Main;
 
@@ -11,15 +13,32 @@ import java.util.List;
 public class NormalEncryption extends BaseEncryption {
 
     private final Log log = new Log();
-    public int buffer = Main.defaultBuffer;
-    private final int BUFFER = 153600;
+    private final MainCtrl mainCtrl = Main.mainLoader.getController();
+    private final ProgressBar progressBar = mainCtrl.getProgressBar();
+    private int BUFFER = 153600;
+    private int limit = Main.defaultBuffer;
 
     @Override
-    protected void start(List<File> files, String rawKey) throws IOException {
-        byte[] key = rawKey.getBytes();
+    protected void start(List<File> files, byte[] rawKey) throws IOException {
+        encryptFiles(files,rawKey);
+    }
 
-        RandomAccessFile in;
+    @Override
+    protected void start(List<File> files, File keyFile) throws IOException {
+        if (keyFile.length() > BUFFER) {
+            log.error("Too big key!");
+            return;
+        }
 
+        RandomAccessFile inKey = new RandomAccessFile(keyFile, "r");
+        byte[] key = new byte[(int)keyFile.length()];
+        inKey.read(key);
+        encryptFiles(files, key);
+        inKey.close();
+    }
+
+    private void encryptFiles(List<File> files, byte[] key) throws IOException {
+        RandomAccessFile inFile;
         for (File file : files) {
             log.info("File path: " + file.getPath());
             if (!file.exists() || file.length() == 0) {
@@ -27,54 +46,30 @@ public class NormalEncryption extends BaseEncryption {
                 continue;
             }
 
-            in = new RandomAccessFile(file, "rw");
+            inFile = new RandomAccessFile(file, "rw");
 
             byte[] readBytes = new byte[BUFFER];
             int counter = 0;
-            int off = 0;
+            int offset = 0;
+
+            long fileSize = file.length();
+            double done = 0;
+
+            progressBar.setVisible(true);
 
             while(true) {
-                int actuallyRead = in.read(readBytes, 0, BUFFER);
-                off = ownEncrypt(readBytes, key, off);
-                in.seek((long) counter * BUFFER);
-                in.write(readBytes,0, actuallyRead);
+                int actuallyRead = inFile.read(readBytes, 0, limit <= 0 ? BUFFER : (int)Math.min(limit-done,BUFFER));
+                offset = ownEncrypt(readBytes, key, offset);
+                inFile.seek((long) counter * BUFFER);
+                inFile.write(readBytes,0, actuallyRead);
                 if (actuallyRead < BUFFER) break;
+                done += actuallyRead;
                 counter++;
-            }
-            in.close();
-        }
-    }
-
-    @Override
-    protected void start(List<File> files, File keyFile) throws IOException {
-        byte[] text = new byte[buffer];
-        byte[] key = new byte[buffer];
-
-        int textSize;
-        int keySize;
-        RandomAccessFile inFile;
-        RandomAccessFile inKey;
-
-        for (File file : files) {
-            log.info("File path: " + file.getPath());
-            if (!file.exists() || file.length() == 0) {
-                log.warn("File not found, continue!");
-                continue;
+                progressBar.setProgress(done/fileSize);
             }
 
-            inFile = new RandomAccessFile(file, "rw");
-            inKey = new RandomAccessFile(keyFile, "r");
-
-            textSize = inFile.read(text, 0, buffer);
-            keySize = inKey.read(key, 0, buffer);
-
-            encrypt(text, key);
-
-            inFile.seek(0);
-            inFile.write(text, 0, textSize);
-
+            progressBar.setVisible(false);
             inFile.close();
-            inKey.close();
         }
     }
 
@@ -87,7 +82,7 @@ public class NormalEncryption extends BaseEncryption {
         for (int i = 0; i < text.length; i++) {
             tmpChar = text[i];
             text[i] = (byte) ((text[i] ^ key[nextKey]) ^ keyHash[i % key.length]);
-            nextKey = (tmpChar * text[i]) % key.length;
+            nextKey = Math.abs(tmpChar * text[i]) % key.length;
         }
 
         return nextKey;
@@ -104,5 +99,16 @@ public class NormalEncryption extends BaseEncryption {
             }
         }
         return hash;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        if (limit < BUFFER && limit > 0) {
+            BUFFER = limit;
+        }
+        this.limit = limit;
     }
 }

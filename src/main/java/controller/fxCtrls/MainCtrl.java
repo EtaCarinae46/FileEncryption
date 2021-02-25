@@ -8,9 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.AlertBox;
 import main.Main;
+import service.Log;
 import service.NormalEncryption;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +21,6 @@ import java.util.ResourceBundle;
 
 public class MainCtrl {
 
-    /*  ==== DEKLARÁCIÓK ====  */
     @FXML private CheckBox       bufferedEncrypt;
     @FXML private CheckBox       enableAdvanced;
     @FXML private CheckBox       encryptMaxSize;
@@ -31,11 +33,14 @@ public class MainCtrl {
     @FXML private TextField      keyPath;
     @FXML private TextArea       logArea;
 
+    private final Log log = new Log();
     private final Locale locale = new Locale("en");
     private final ResourceBundle resourceBundle = ResourceBundle.getBundle("lang", locale);
     private List<File> fileList = new ArrayList<>();
 
-    /*  ==== FÁJLOK KIVÁLASZTÁSA ====  */
+    /**
+     * File choosing modal
+     */
     @FXML
     private void fileChooser() {
 
@@ -62,9 +67,12 @@ public class MainCtrl {
         }
     }
 
-    /*  ==== ENCRIPTION ====  */
+    /**
+     * Validates the UI then starts the encryption
+     * @throws IOException
+     */
     @FXML
-    private void encrypt() {
+    private void encrypt() throws IOException {
         NormalEncryption normalEncryption = new NormalEncryption();
 
         if (fileList != null && fileList.size() == 0) {
@@ -81,36 +89,40 @@ public class MainCtrl {
 
         // if advanced options are turned off just running normal encryption
         if (!adv) {
-            normalEncryption.encrypt(fileList, pwdField.getText());
+            normalEncryption.encrypt(fileList, pwdField.getText().getBytes());
             return;
         }
-
-        // if buffered encryption (Encrypt the entire file) checked no need to check max buff Size
-        if (buf) {
-            if (key && keyPath.getText().length() > 0) {
-                normalEncryption.encrypt(fileList, new File(keyPath.getText()));
-            } else {
-                normalEncryption.encrypt(fileList, pwdField.getText());
-            }
-
-            return;
-        }
-
-        // At this pont we're sure we'll need normal encryption since buffered encryption not checked
-        // if max encrypt size checked and its a number change default buffer
-        int newBuffSize;
-        if (max && bufferSizeArea.getText().length() > 0 &&
-                (newBuffSize = toBufferSize(bufferSizeArea.getText())) != -1) {
-            normalEncryption.buffer = newBuffSize;
-        }
-
+        byte[] keyArray = null;
         if (key) {
-            normalEncryption.encrypt(fileList, new File(keyPath.getText()));
-        } else {
-            normalEncryption.encrypt(fileList, pwdField.getText());
+            File keyFile = new File(keyPath.getText());
+            if (keyFile.length() > Main.defaultBuffer) {
+                log.error("Too big key!");
+                return;
+            }
+            RandomAccessFile inKey = new RandomAccessFile(keyFile, "r");
+            keyArray = new byte[(int)keyFile.length()];
+            inKey.read(keyArray);
         }
+
+        int size;
+        if (max && (size = toBufferSize(bufferSizeArea.getText())) != -1) {
+            normalEncryption.setLimit(size);
+        }
+
+        if (buf) {
+            normalEncryption.setLimit(-1);
+        }
+
+        normalEncryption.encrypt(fileList, keyArray == null ? pwdField.getText().getBytes() : keyArray);
+
     }
 
+    /**
+     * Helper method, converts a String text safely to int
+     * if it cannot be converted to int it'll return -1 (as a Buffer size cannot be -1)
+     * @param text as an input
+     * @return integer, -1 if the text cannot be converted
+     */
     private int toBufferSize(String text) {
         int i;
         try {
@@ -122,7 +134,10 @@ public class MainCtrl {
         return i;
     }
 
-    /*  ==== VALIDATING INPUTS ====  */
+    /**
+     * Helper method that validates the UI
+     * @return 0 on success
+     */
     private int handleErrors() {
         // Checking pwd field and file path input
         if ((pwdField.getText().length() <= 3 && !(enableAdvanced.isSelected() && keyFromFile.isSelected()
@@ -139,7 +154,9 @@ public class MainCtrl {
     }
 
 
-    /*  ==== FÁJL LISTA TÖRLÉSE ====  */
+    /**
+     * Clears the file list
+     */
     @FXML private void clearList() {
         fileList = new ArrayList<>();
         filePath.setText("");
@@ -148,13 +165,14 @@ public class MainCtrl {
         logger.info("File list cleared!");
     }
 
-
-    /*  ==== LOG TÖRLÉSE ====  */
     @FXML private void clearLog() {
         logArea.setText("");
     }
 
-    /*  ==== VBOX FELOLDÁSA (HALADÓ BEÁLLÍTÁSOK) ====  */
+    /**
+     * Enables the other checkboxes/text fields
+     * if the advanced checkbox is checked
+     */
     @FXML private void enableAdvancedClick() {
         advancedVBox.setDisable(!enableAdvanced.isSelected());
         keyFromFile.setSelected(false);
@@ -164,17 +182,14 @@ public class MainCtrl {
         bufferedEncrypt.setSelected(false);
     }
 
-    /*  ==== KULCS FORRÁS FELOLDÁSA (HALADÓ BEÁLLÍTÁSOK) ====  */
     @FXML private void keyFromFileClick() {
         keyPath.setDisable(!keyFromFile.isSelected());
         pwdField.setDisable(keyFromFile.isSelected());
     }
 
-    /*  ==== MAX TITKOSÍTÁSI MÉRET BEVITEL FELOLDÁSA (HALADÓ BEÁLLÍTÁSOK) ====  */
     @FXML private void encryptMaxSizeAction() {
         bufferSizeArea.setDisable(!encryptMaxSize.isSelected());
     }
-
 
     @FXML private void bufferedEncryptAction() {
         encryptMaxSize.setSelected(false);

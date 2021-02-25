@@ -9,10 +9,10 @@ import java.util.List;
 public abstract class BaseEncryption {
     private static final Log log = new Log();
 
-    abstract protected void start(List<File> files, String rawKey) throws IOException;
+    abstract protected void start(List<File> files, byte[] rawKey) throws IOException;
     abstract protected void start(List<File> files, File keyFile) throws IOException;
 
-    public void encrypt(List<File> files, String rawKey) {
+    public void encrypt(List<File> files, byte[] rawKey) {
         Thread th = new Thread(() -> {
 
             double done;
