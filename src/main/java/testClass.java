@@ -1,40 +1,28 @@
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.List;
 
 public class testClass {
+
+    static final int LIMIT = 20000;
+    static final String KEY = "Qwerty12345";
+    static final String LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
     public static void main(String[] asd) throws IOException {
-
-        File f = new File("C:\\xampp\\htdocs\\mywebsite\\password.txt");
-        RandomAccessFile file = new RandomAccessFile(f, "r");
-        int[] key = new int[]{5,-14,31,-9,3};
-
-        for (int i=0; i < 10; i++) {
-            byte b = file.readByte();
-            System.out.println((char)(b >> -key[i%5]));
-        }
-
 
     }
 
-    private static String ownEncrypt(String text, String key) {
-        char[] chars = new char[text.length()];
-        int[] key_int = key.chars().toArray();
+    private static int ownEncrypt(byte[] text, byte[] key) {
+        int[] keyHash = createSimpleHash(key);
 
-        int nextKey = 0;
+        int nextKey = keyHash[0] % key.length;
         int tmpChar;
 
-        for (int i = 0; i < chars.length; i++) {
-            tmpChar = chars[i];
-            chars[i] = (char) (text.charAt(i) ^ key_int[nextKey]);
-            nextKey = tmpChar % key_int.length;
+        for (int i = 0; i < text.length; i++) {
+            tmpChar = text[i];
+            text[i] = (byte) ((text[i] ^ key[nextKey]) ^ keyHash[i % key.length]);
+            nextKey = (tmpChar * text[i]) % key.length;
         }
 
-        chars[0] = (char) (chars[0] ^ key_int[key_int.length - 1]);
-
-        return String.copyValueOf(chars);
+        return nextKey;
     }
 
     private static String normalEncrypt(String text, String key) {
@@ -42,21 +30,22 @@ public class testClass {
         int[] key_int = key.chars().toArray();
 
         for (int i = 0; i < chars.length; i++) {
-            chars[i] = (char) (text.charAt(i) ^ key_int[i % key_int.length]);
+            chars[i] = (char) (chars[i] ^ key_int[i % key_int.length]);
         }
 
         return String.copyValueOf(chars);
     }
 
-    public static List<Integer> primeFactors(int number) {
-        int n = number;
-        List<Integer> factors = new ArrayList<>();
-        for (int i = 2; i <= n; i++) {
-            while (n % i == 0) {
-                factors.add(i);
-                n /= i;
+    private static int[] createSimpleHash(byte[] key) {
+        int[] chars2 = new int[key.length];
+        int[] hash = new int[key.length];
+        for (int i = 0; i < key.length; i++) {
+            chars2[i] = key[key.length-(i+1)] ^ i;
+            hash[i] = (char)chars2[i];
+            for (int n = 0; n < chars2.length; n++) {
+                hash[i] = hash[i] ^ key[n];
             }
         }
-        return factors;
+        return hash;
     }
 }

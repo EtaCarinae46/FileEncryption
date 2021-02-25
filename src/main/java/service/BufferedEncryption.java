@@ -45,7 +45,7 @@ public class BufferedEncryption extends BaseEncryption {
             for (int i = 0; i < blockCount; i++) {
                 currentFilePointer = inFile.getFilePointer();
                 readBytes = inFile.read(text, 0, blockSize);
-                keyPos = encrypt(text, key, key.length, keyPos);
+                keyPos = encrypt(text, key, keyPos);
 
                 inFile.seek(currentFilePointer);
                 inFile.write(text, 0, readBytes);
@@ -85,8 +85,8 @@ public class BufferedEncryption extends BaseEncryption {
                 currentFilePointer = inFile.getFilePointer();
                 inKey.seek(inKey.getFilePointer() % keyFile.length());
                 readBytes = inFile.read(text, 0, blockSize);
-                readKey = inKey.read(tempKey, 0, keySize);
-                keyPos = encrypt(text, tempKey, readKey, keyPos);
+                inKey.read(tempKey, 0, keySize);
+                keyPos = encrypt(text, tempKey, keyPos);
                 inFile.seek(currentFilePointer);
                 inFile.write(text, 0, readBytes);
                 progressBar.setProgress(i / (double) blockCount);

@@ -56,15 +56,15 @@ public abstract class BaseEncryption {
         th.start();
     }
 
-    protected void encrypt(byte[] text, byte[] key, int keySize) {
-        encrypt(text, key, keySize, 0);
+    protected void encrypt(byte[] text, byte[] key) {
+        encrypt(text, key, 0);
     }
 
-    protected int encrypt(byte[] text, byte[] key, int keySize, int off) {
+    protected int encrypt(byte[] text, byte[] key, int off) {
         int keyPos = off;
         for (int i = 0; i < text.length; i++) {
             text[i] = (byte) (text[i] ^ key[keyPos]);
-            keyPos = (keyPos+1) % keySize;
+            keyPos = (keyPos+1) % key.length;
         }
         return keyPos;
     }

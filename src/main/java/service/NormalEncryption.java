@@ -31,7 +31,7 @@ public class NormalEncryption extends BaseEncryption {
             in = new RandomAccessFile(file, "rw");
             realSize = in.read(text, 0, buffer);
             in.seek(0);
-            encrypt(text, key, key.length);
+            encrypt(text, key);
             in.write(text, 0, realSize);
             in.close();
         }
@@ -60,7 +60,7 @@ public class NormalEncryption extends BaseEncryption {
             textSize = inFile.read(text, 0, buffer);
             keySize = inKey.read(key, 0, buffer);
 
-            encrypt(text, key, keySize);
+            encrypt(text, key);
 
             inFile.seek(0);
             inFile.write(text, 0, textSize);
