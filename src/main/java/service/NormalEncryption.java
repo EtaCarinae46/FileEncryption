@@ -12,13 +12,12 @@ public class NormalEncryption extends BaseEncryption {
 
     private final Log log = new Log();
     public int buffer = Main.defaultBuffer;
+    private final int BUFFER = 153600;
 
     @Override
     protected void start(List<File> files, String rawKey) throws IOException {
-        byte[] text = new byte[buffer];
         byte[] key = rawKey.getBytes();
 
-        int realSize;
         RandomAccessFile in;
 
         for (File file : files) {
@@ -29,10 +28,19 @@ public class NormalEncryption extends BaseEncryption {
             }
 
             in = new RandomAccessFile(file, "rw");
-            realSize = in.read(text, 0, buffer);
-            in.seek(0);
-            encrypt(text, key);
-            in.write(text, 0, realSize);
+
+            byte[] readBytes = new byte[BUFFER];
+            int counter = 0;
+            int off = 0;
+
+            while(true) {
+                int actuallyRead = in.read(readBytes, 0, BUFFER);
+                off = ownEncrypt(readBytes, key, off);
+                in.seek((long) counter * BUFFER);
+                in.write(readBytes,0, actuallyRead);
+                if (actuallyRead < BUFFER) break;
+                counter++;
+            }
             in.close();
         }
     }
@@ -68,5 +76,33 @@ public class NormalEncryption extends BaseEncryption {
             inFile.close();
             inKey.close();
         }
+    }
+
+    private static int ownEncrypt(byte[] text, byte[] key, int off) {
+        int[] keyHash = createSimpleHash(key);
+
+        int nextKey = Math.max(off, 0);
+        int tmpChar;
+
+        for (int i = 0; i < text.length; i++) {
+            tmpChar = text[i];
+            text[i] = (byte) ((text[i] ^ key[nextKey]) ^ keyHash[i % key.length]);
+            nextKey = (tmpChar * text[i]) % key.length;
+        }
+
+        return nextKey;
+    }
+
+    private static int[] createSimpleHash(byte[] key) {
+        int[] chars2 = new int[key.length];
+        int[] hash = new int[key.length];
+        for (int i = 0; i < key.length; i++) {
+            chars2[i] = key[key.length-(i+1)] ^ i;
+            hash[i] = (char)chars2[i];
+            for (int n = 0; n < chars2.length; n++) {
+                hash[i] = hash[i] ^ key[n];
+            }
+        }
+        return hash;
     }
 }

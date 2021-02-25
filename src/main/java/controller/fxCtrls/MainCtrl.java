@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.AlertBox;
 import main.Main;
-import service.BufferedEncryption;
 import service.NormalEncryption;
 
 import java.io.File;
@@ -67,7 +66,6 @@ public class MainCtrl {
     @FXML
     private void encrypt() {
         NormalEncryption normalEncryption = new NormalEncryption();
-        BufferedEncryption bufferedEncryption = new BufferedEncryption();
 
         if (fileList != null && fileList.size() == 0) {
             fileList.add(new File(filePath.getText()));
@@ -90,9 +88,9 @@ public class MainCtrl {
         // if buffered encryption (Encrypt the entire file) checked no need to check max buff Size
         if (buf) {
             if (key && keyPath.getText().length() > 0) {
-                bufferedEncryption.encrypt(fileList, new File(keyPath.getText()));
+                normalEncryption.encrypt(fileList, new File(keyPath.getText()));
             } else {
-                bufferedEncryption.encrypt(fileList, pwdField.getText());
+                normalEncryption.encrypt(fileList, pwdField.getText());
             }
 
             return;

@@ -10,7 +10,7 @@ public class testClass {
 
     }
 
-    private static int ownEncrypt(byte[] text, byte[] key) {
+    private static int ownEncrypt(byte[] text, byte[] key, int off) {
         int[] keyHash = createSimpleHash(key);
 
         int nextKey = keyHash[0] % key.length;

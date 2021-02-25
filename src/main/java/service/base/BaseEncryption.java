@@ -22,7 +22,7 @@ public abstract class BaseEncryption {
             try {
                 start(files, rawKey);
             } catch (IOException e) {
-                log.error("IOException in BufferedEncryption");
+                log.error(e.getMessage());
             }
 
             done = (System.currentTimeMillis() - start) / 1000.0;
@@ -45,7 +45,7 @@ public abstract class BaseEncryption {
             try {
                 start(files, keyFile);
             } catch (IOException e) {
-                log.error("IOException in BufferedEncryption");
+                log.error(e.getMessage());
             }
 
             done = (System.currentTimeMillis() - start) / 1000.0;
