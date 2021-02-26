@@ -44,13 +44,13 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <TextField fx:id="filePath" promptText="File Path" text="C:\test\sajt.txt"/>
+                              <TextField fx:id="filePath" promptText="File Path"/>
                               <PasswordField fx:id="pwdField" promptText="Password" GridPane.rowIndex="1" />
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.rowIndex="2">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#encrypt" text="Okay"/>
-                                    <Button mnemonicParsing="false" onAction="#fileChooser" text="Browse" />
-                                    <Button mnemonicParsing="false" onAction="#clearList" text="Clear List" />
+                                    <Button styleClass="mainButton" mnemonicParsing="false" onAction="#encrypt" text="Okay"/>
+                                    <Button styleClass="mainButton" mnemonicParsing="false" onAction="#fileChooser" text="Browse" />
+                                    <Button styleClass="mainButton,warnButton" mnemonicParsing="false" onAction="#clearList" text="Clear List" />
                                  </children>
                               </HBox>
                            </children>
@@ -66,9 +66,9 @@
                      <children>
                         <TextArea fx:id="logArea" editable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="446.0" prefWidth="620.0" wrapText="true">
                            <contextMenu>
-                              <ContextMenu>
+                              <ContextMenu styleClass="logPopup">
                                 <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear" />
+                                  <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear"/>
                                 </items>
                               </ContextMenu>
                            </contextMenu>

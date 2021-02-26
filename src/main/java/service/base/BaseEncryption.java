@@ -10,7 +10,6 @@ public abstract class BaseEncryption {
     private static final Log log = new Log();
 
     abstract protected void start(List<File> files, byte[] rawKey) throws IOException;
-    abstract protected void start(List<File> files, File keyFile) throws IOException;
 
     public void encrypt(List<File> files, byte[] rawKey) {
         Thread th = new Thread(() -> {
@@ -31,33 +30,6 @@ public abstract class BaseEncryption {
 
         th.setDaemon(false);
         th.start();
-    }
-
-    public void encrypt(List<File> files, File keyFile) {
-        Thread th = new Thread(() -> {
-
-            long start;
-            double done;
-
-            log.info("Encryption started");
-            start = System.currentTimeMillis();
-
-            try {
-                start(files, keyFile);
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
-
-            done = (System.currentTimeMillis() - start) / 1000.0;
-            log.info("Done in " + done + "s");
-        });
-
-        th.setDaemon(false);
-        th.start();
-    }
-
-    protected void encrypt(byte[] text, byte[] key) {
-        encrypt(text, key, 0);
     }
 
     protected int encrypt(byte[] text, byte[] key, int off) {

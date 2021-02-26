@@ -178,6 +178,7 @@ public class MainCtrl {
         keyFromFile.setSelected(false);
         keyPath.setDisable(true);
         encryptMaxSize.setSelected(false);
+        encryptMaxSize.setDisable(false);
         bufferSizeArea.setDisable(true);
         bufferedEncrypt.setSelected(false);
     }

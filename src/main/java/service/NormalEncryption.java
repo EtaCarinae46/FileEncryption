@@ -19,25 +19,7 @@ public class NormalEncryption extends BaseEncryption {
     private int limit = Main.defaultBuffer;
 
     @Override
-    protected void start(List<File> files, byte[] rawKey) throws IOException {
-        encryptFiles(files,rawKey);
-    }
-
-    @Override
-    protected void start(List<File> files, File keyFile) throws IOException {
-        if (keyFile.length() > BUFFER) {
-            log.error("Too big key!");
-            return;
-        }
-
-        RandomAccessFile inKey = new RandomAccessFile(keyFile, "r");
-        byte[] key = new byte[(int)keyFile.length()];
-        inKey.read(key);
-        encryptFiles(files, key);
-        inKey.close();
-    }
-
-    private void encryptFiles(List<File> files, byte[] key) throws IOException {
+    protected void start(List<File> files, byte[] key) throws IOException {
         RandomAccessFile inFile;
         for (File file : files) {
             log.info("File path: " + file.getPath());
