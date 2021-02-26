@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
 
-public class NormalEncryption extends BaseEncryption {
+public class Encryption extends BaseEncryption {
 
     private final Log log = new Log();
     private final MainCtrl mainCtrl = Main.mainLoader.getController();

@@ -9,7 +9,7 @@ import javafx.stage.FileChooser;
 import model.AlertBox;
 import main.Main;
 import service.Log;
-import service.NormalEncryption;
+import service.Encryption;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class MainCtrl {
      */
     @FXML
     private void encrypt() throws IOException {
-        NormalEncryption normalEncryption = new NormalEncryption();
+        Encryption encryption = new Encryption();
 
         if (fileList != null && fileList.size() == 0) {
             fileList.add(new File(filePath.getText()));
@@ -89,7 +89,7 @@ public class MainCtrl {
 
         // if advanced options are turned off just running normal encryption
         if (!adv) {
-            normalEncryption.encrypt(fileList, pwdField.getText().getBytes());
+            encryption.encrypt(fileList, pwdField.getText().getBytes());
             return;
         }
         byte[] keyArray = null;
@@ -106,14 +106,14 @@ public class MainCtrl {
 
         int size;
         if (max && (size = toBufferSize(bufferSizeArea.getText())) != -1) {
-            normalEncryption.setLimit(size);
+            encryption.setLimit(size);
         }
 
         if (buf) {
-            normalEncryption.setLimit(-1);
+            encryption.setLimit(-1);
         }
 
-        normalEncryption.encrypt(fileList, keyArray == null ? pwdField.getText().getBytes() : keyArray);
+        encryption.encrypt(fileList, keyArray == null ? pwdField.getText().getBytes() : keyArray);
 
     }
 
