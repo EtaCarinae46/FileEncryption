@@ -71,13 +71,13 @@ public class Encryption extends BaseEncryption {
     }
 
     private static int[] createSimpleHash(byte[] key) {
-        int[] chars2 = new int[key.length];
+        int[] shiftedKey = new int[key.length];
         int[] hash = new int[key.length];
         for (int i = 0; i < key.length; i++) {
-            chars2[i] = key[key.length-(i+1)] ^ i;
-            hash[i] = (char)chars2[i];
-            for (int n = 0; n < chars2.length; n++) {
-                hash[i] = hash[i] ^ key[n];
+            shiftedKey[i] = (key[key.length-(i+1)]<<(i+key.length))%255;
+            hash[i] = shiftedKey[i];
+            for (byte b : key) {
+                hash[i] = hash[i] ^ b;
             }
         }
         return hash;
